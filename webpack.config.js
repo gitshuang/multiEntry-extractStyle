@@ -12,28 +12,35 @@ module.exports = {
     },
     module: {
         rules: [
-        {
-        	test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['@babel/preset-env','@babel/preset-react']
-                }
-            }
-        }
-            
+                    {
+                        test: /\.js$/,
+                        exclude: /(node_modules|bower_components)/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: ['@babel/preset-env', '@babel/preset-react'],
+                                plugins: ['@babel/plugin-proposal-class-properties']
+                            }
+                        }
+                    },
+                    {
+                        test:/\.css$/,
+                        use: [
+                                "style-loader","css-loader"
+                        ]
+                    }
+
         ]
     },
     devServer: {
-      contentBase: './dist'
+        contentBase: './dist'
     },
     plugins: [
-      new CleanWebpackPlugin(['dist']),
-      new HtmlWebpackPlugin({
-        title: 'Development',
-        template: 'index.html',//模板文件，可以带上react的根节点
-      })
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({
+            title: 'Development',
+            template: 'index.html', //模板文件，可以带上react的根节点
+        })
     ]
 
 }

@@ -1,33 +1,37 @@
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Detail from './detail/detail.js'
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
 
-/*const Next = ()=>(
-      <div>这是第二页</div>
-	)
-*/
-// class Next extends React.Component{
-// 	render(){
-// 		return <div>这是第二页</div>
-// 	}
-// }
-export default class App extends React.Component{
+export default class Next extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state={pwd:1}
+  }
 
-	render(){
-		
-		return <Router>
-		            <div>
-						<Link to="/next">Home</Link>
-						
-						<Route path="/next" component="Detail"/>
-		            </div>
-					
-				</Router>
-	}
+  /*shouldComponentUpdate(nextProps,nextState){
+    console.log(nextProps,'nextProps');
+    console.log(nextState,'nextState');
+    //return true {this.props.id.a}
+  }*/
+  render() {
+   
+    console.log('child rendered')
+    return (
+     <div>child</div>
+    );
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
