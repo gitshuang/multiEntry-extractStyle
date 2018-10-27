@@ -1,13 +1,20 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+// const indexExtractCss = new ExtractTextPlugin('[name].[contenthash].css')
+// const detailExtractCss = new ExtractTextPlugin('[name].[contenthash].css')
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        index:path.resolve(__dirname, "src/index/index.js"),
+        detail:path.resolve(__dirname, "src/detail/index.js")
+    },
     // devtool: 'inline-source-map',
+
     output: {
-        filename: 'main.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
     module: {
@@ -24,10 +31,25 @@ module.exports = {
                         }
                     },
                     {
-                        test:/\.css$/,
+                        test:/\.less$/,
                         use: [
-                                "style-loader","css-loader"
+                                {
+                                    loader:"style-loader"
+                                },
+                                {
+                                    loader:"css-loader"
+                                },
+                                {
+                                    loader:"less-loader"
+                                }
                         ]
+                    },
+                    
+                    {
+
+                        test: /\.css$/,
+                        use: [ 'style-loader', 'css-loader' ]
+                      
                     }
 
         ]
@@ -38,8 +60,28 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
-            title: 'Development',
-            template: 'index.html', //模板文件，可以带上react的根节点
+            chunks: ['index'],
+            filename:'index.html',
+            template: './src/index/index.html', //模板文件，可以带上react的根节点
+            inject: true,
+            minify: {
+               removeComments: true,
+               collapseWhitespace: true
+            }
+        }),
+        new HtmlWebpackPlugin({
+            chunks: ['detail'],
+            filename:'detail.html',
+            template: './src/detail/index.html', //模板文件，可以带上react的根节点
+            inject: true,
+            minify: {
+               removeComments: true,
+               collapseWhitespace: true
+            }
+        }),
+        new MiniCssExtractPlugin({
+          filename: "[name].css",
+          chunkFilename: "[id].css"
         })
     ]
 

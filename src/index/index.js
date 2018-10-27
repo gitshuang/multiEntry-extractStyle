@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Next from './app.js';
 import {Button} from 'antd';
+import './index.less';
+
 
 class App extends React.Component {
 
@@ -21,11 +22,11 @@ class App extends React.Component {
 
             }
             this.insert = this.insert.bind(this);
-
+            this.handleClick = this.handleClick.bind(this);
            }
            
-           handleClick(){
-            console.log(1)
+           handleClick(e){
+            console.log(e.target.innerText)
            }
 
            insert(){
@@ -45,19 +46,17 @@ class App extends React.Component {
            }
             render(){
                 console.log(this.state.list);
-                //<Next onClick={this.handleClick} name={this.state.list}></Next>
 
                 return (
                   <>
                     <div >
 
-                      {this.state.list.map(function(item,index){
-                          return (<li>{index}:::{item.name}:{item.age}</li>)
+                      {this.state.list.map((item,index)=>{
+                          return (<li onClick={this.handleClick}>{index}:::{item.name}:{item.age}</li>)
                       })}
                       <Button onClick={this.insert}>插入一条</Button>
                       
                     </div>
-                      <Next name={this.state.list}></Next>
                   </>
                 );
             }
