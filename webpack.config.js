@@ -2,15 +2,43 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const glob = require('glob');
+//const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // const indexExtractCss = new ExtractTextPlugin('[name].[contenthash].css')
 // const detailExtractCss = new ExtractTextPlugin('[name].[contenthash].css')
 
-module.exports = {
-    entry: {
-        index:path.resolve(__dirname, "src/index/index.js"),
-        detail:path.resolve(__dirname, "src/detail/index.js")
-    },
+//const extractCSS = new ExtractTextPlugin('css.css');
+
+const extractLESS = new ExtractTextPlugin('[name].css');
+
+function getEntry () {
+  let globPath = 'src/**/index.html'
+  // (\/|\\\\) 这种写法是为了兼容 windows和 mac系统目录路径的不同写法
+  let pathDir = 'src(\/|\\\\)(.*?)'
+  let files = glob.sync(globPath)
+  let dirname, entries = []
+  for (let i = 0; i < files.length; i++) {
+    dirname = path.dirname(files[i])
+    entries.push(dirname.replace(new RegExp('^' + pathDir), '$2'))
+  }
+  return entries
+  
+}
+function addEntry(){
+    let entryObj = {}
+    getEntry().forEach(item => {
+    entryObj[item] = path.resolve(__dirname, 'src', item, 'index.js')
+  })
+  return entryObj
+}
+
+
+module.exports = webpackconfig = {
+    entry:addEntry(),
+    // {
+    //     index:path.resolve(__dirname, "src/index/index.js"),
+    //     detail:path.resolve(__dirname, "src/detail/index.js")
+    // },
     // devtool: 'inline-source-map',
 
     output: {
@@ -32,25 +60,28 @@ module.exports = {
                     },
                     {
                         test:/\.less$/,
-                        use: [
-                                {
-                                    loader:"style-loader"
-                                },
-                                {
-                                    loader:"css-loader"
-                                },
-                                {
-                                    loader:"less-loader"
-                                }
-                        ]
+                        use:extractLESS.extract([ 'css-loader', 'less-loader' ])
+
+ 
+                        // use: [
+                        //         {
+                        //             loader:"style-loader"
+                        //         },
+                        //         {
+                        //             loader:"css-loader"
+                        //         },
+                        //         {
+                        //             loader:"less-loader"
+                        //         }
+                        // ]
                     },
                     
-                    {
+                    // {
 
-                        test: /\.css$/,
-                        use: [ 'style-loader', 'css-loader' ]
+                    //     test: /\.css$/,
+                    //     use: [ 'style-loader', 'css-loader' ]
                       
-                    }
+                    // }
 
         ]
     },
@@ -59,30 +90,20 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({
-            chunks: ['index'],
-            filename:'index.html',
-            template: './src/index/index.html', //模板文件，可以带上react的根节点
-            inject: true,
-            minify: {
-               removeComments: true,
-               collapseWhitespace: true
-            }
-        }),
-        new HtmlWebpackPlugin({
-            chunks: ['detail'],
-            filename:'detail.html',
-            template: './src/detail/index.html', //模板文件，可以带上react的根节点
-            inject: true,
-            minify: {
-               removeComments: true,
-               collapseWhitespace: true
-            }
-        }),
-        new MiniCssExtractPlugin({
-          filename: "[name].css",
-          chunkFilename: "[id].css"
-        })
+        extractLESS
     ]
 
 }
+getEntry().forEach(function(item){
+    var config = {
+            chunks: [item],
+            filename:path.join(item)+'.html',
+            template: path.join(__dirname,'src',item,'index.html') ,
+            inject: true,
+            minify: {
+               removeComments: true,
+               collapseWhitespace: true
+            }
+        }
+        webpackconfig.plugins.push(new HtmlWebpackPlugin(config))
+})
